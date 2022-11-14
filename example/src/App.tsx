@@ -1,12 +1,6 @@
-import * as React from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Button,
-  Picker,
-  TextInput,
-} from "react-native";
+import * as React from 'react';
+import { StyleSheet, View, Text, Button, TextInput } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import {
   BLEPrinter,
   NetPrinter,
@@ -14,8 +8,7 @@ import {
   IUSBPrinter,
   IBLEPrinter,
   INetPrinter,
-} from "react-native-thermal-receipt-printer";
-import Loader from "./Loader";
+} from 'react-native-thermal-receipt-printer';
 
 const printerList: Record<string, any> = {
   ble: BLEPrinter,
@@ -29,9 +22,8 @@ interface SelectedPrinter
 }
 
 export default function App() {
-  const [selectedValue, setSelectedValue] = React.useState<
-    keyof typeof printerList
-  >("ble");
+  const [selectedValue, setSelectedValue] =
+    React.useState<keyof typeof printerList>('ble');
   const [devices, setDevices] = React.useState([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [selectedPrinter, setSelectedPrinter] = React.useState<SelectedPrinter>(
@@ -42,7 +34,7 @@ export default function App() {
     const getListDevices = async () => {
       const Printer = printerList[selectedValue];
       // get list device for net printers is support scanning in local ip but not recommended
-      if (selectedValue === "net") return;
+      if (selectedValue === 'net') return;
       try {
         setLoading(true);
         await Printer.init();
@@ -65,21 +57,18 @@ export default function App() {
       try {
         setLoading(true);
         switch (selectedPrinter.printerType) {
-          case "ble":
+          case 'ble':
             await BLEPrinter.connectPrinter(
-              selectedPrinter?.inner_mac_address || ""
+              selectedPrinter?.inner_mac_address || ''
             );
             break;
-          case "net":
-            await NetPrinter.connectPrinter(
-              "192.168.1.100",
-              9100
-            );
+          case 'net':
+            await NetPrinter.connectPrinter('192.168.1.100', 9100);
             break;
-          case "usb":
+          case 'usb':
             await USBPrinter.connectPrinter(
-              selectedPrinter?.vendor_id || "",
-              selectedPrinter?.product_id || ""
+              selectedPrinter?.vendor_id || '',
+              selectedPrinter?.product_id || ''
             );
             break;
           default:
@@ -97,8 +86,13 @@ export default function App() {
     try {
       // [options valueForKey:@"imageWidth"];
       const Printer = printerList[selectedValue];
-      await Printer.printImage("https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg", {imageWidth: 100, paddingX: 300});
-      await Printer.printText("<C>sample text bjhbfhjbdjhfbjfhdvfjdvhjdbfjbjhfdbghjfbgbhjfdgbjfdhbgbjhdfgbjhdfbghjdbghdbjgdhhbgghdjfhbgjdfbgbhjd</C>\n");
+      await Printer.printImage(
+        'https://howmuch-pk.s3.ap-southeast-1.amazonaws.com/spree/stores/1380/squared_large/logo-for-grocery-store-vector-21609822.jpeg',
+        { imageWidth: 100, paddingX: 300 }
+      );
+      await Printer.printText(
+        '<C>sample text bjhbfhjbdjhfbjfhdvfjdvhjdbfjbjhfdbghjfbgbhjfdgbjfdhbgbjhdfgbjhdfbghjdbghdbjgdhhbgghdjfhbgjdfbgbhjd</C>\n'
+      );
     } catch (err) {
       console.warn(err);
     }
@@ -115,9 +109,9 @@ export default function App() {
   const handleChangeHostAndPort = (params: string) => (text: string) =>
     setSelectedPrinter((prev) => ({
       ...prev,
-      device_name: "Net Printer",
+      device_name: 'Net Printer',
       [params]: text,
-      printerType: "net",
+      printerType: 'net',
     }));
 
   const _renderNet = () => (
@@ -126,14 +120,14 @@ export default function App() {
         <Text>Host: </Text>
         <TextInput
           placeholder="192.168.100.19"
-          onChangeText={handleChangeHostAndPort("host")}
+          onChangeText={handleChangeHostAndPort('host')}
         />
       </View>
       <View style={styles.rowDirection}>
         <Text>Port: </Text>
         <TextInput
           placeholder="9100"
-          onChangeText={handleChangeHostAndPort("port")}
+          onChangeText={handleChangeHostAndPort('port')}
         />
       </View>
     </View>
@@ -153,6 +147,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Text>{loading}</Text>
       <View style={styles.section}>
         <Text>Select printer type: </Text>
         <Picker
@@ -170,7 +165,7 @@ export default function App() {
       </View>
       <View style={styles.section}>
         <Text>Select printer: </Text>
-        {selectedValue === "net" ? _renderNet() : _renderOther()}
+        {selectedValue === 'net' ? _renderNet() : _renderOther()}
       </View>
       <Button
         disabled={!selectedPrinter?.device_name}
@@ -182,7 +177,6 @@ export default function App() {
         title="Print sample"
         onPress={handlePrint}
       />
-     
     </View>
   );
 }
@@ -190,13 +184,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 16,
   },
   section: {
     flex: 1,
   },
   rowDirection: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 });
